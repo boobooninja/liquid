@@ -89,4 +89,10 @@ class VariableTest < Minitest::Test
   def test_multiline_variable
     assert_equal 'worked', Template.parse("{{\ntest\n}}").render!('test' => 'worked')
   end
+
+  def test_render_with_global_filters
+    template = Template.parse(%({{test}}))
+    filter = ->(output) { "#{output} filtered" }
+    assert_equal 'worked filtered', template.render!({ 'test' => 'worked' }, { global_filters: filter })
+  end
 end

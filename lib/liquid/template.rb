@@ -183,20 +183,15 @@ module Liquid
       when Hash
         options = args.pop
 
-        if options[:registers].is_a?(Hash)
-          registers.merge!(options[:registers])
-        end
+        registers.merge!(options[:registers]) if options[:registers].is_a?(Hash)
 
-        if options[:filters]
-          context.add_filters(options[:filters])
-        end
+        context.add_filters(options[:filters]) if options[:filters]
 
-        if options[:exception_handler]
-          context.exception_handler = options[:exception_handler]
-        end
-      when Module
-        context.add_filters(args.pop)
-      when Array
+        context.add_global_filters(options[:global_filters]) if options[:global_filters]
+
+        context.exception_handler = options[:exception_handler] if options[:exception_handler]
+
+      when Module, Array
         context.add_filters(args.pop)
       end
 

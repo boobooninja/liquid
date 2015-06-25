@@ -71,10 +71,16 @@ module Liquid
     end
 
     def render(context)
-      @filters.inject(context.evaluate(@name)) do |output, (filter_name, filter_args, filter_kwargs)|
+      obj = @filters.inject(context.evaluate(@name)) do |output, (filter_name, filter_args, filter_kwargs)|
         filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
         context.invoke(filter_name, output, *filter_args)
-      end.tap{ |obj| taint_check(obj) }
+      end
+
+      obj = context.apply_global_filters(obj)
+
+      taint_check(obj)
+
+      obj
     end
 
     private

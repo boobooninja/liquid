@@ -211,4 +211,11 @@ class TemplateTest < Minitest::Test
     end
     assert exception.is_a?(Liquid::ZeroDivisionError)
   end
+
+  def test_global_filters_option_on_render
+    filter = ->(output) { "#{output} filtered" }
+    rendered_template = Template.parse("{{name}}").render({ "name" => "bob" }, global_filters: [filter])
+
+    assert_equal 'bob filtered', rendered_template
+  end
 end

@@ -31,6 +31,7 @@ module Liquid
 
       @interrupts = []
       @filters = []
+      @global_filters = []
     end
 
     def strainer
@@ -45,6 +46,22 @@ module Liquid
       filters = [filters].flatten.compact
       @filters += filters
       @strainer = nil
+    end
+
+    def add_global_filters(global_filters)
+      gf = [global_filters].flatten.compact
+
+      gf.each do |p|
+        if p.respond_to?(:call)
+          @global_filters.push(p)
+        end
+      end
+    end
+
+    def apply_global_filters(obj)
+      @global_filters.inject(obj) do |output, f|
+        f.call(output)
+      end
     end
 
     # are there any not handled interrupts?
